@@ -1,11 +1,13 @@
 package com.bscs.polls.config;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final String[] allowedOrigins = {"*", "http://localhost:3000"};
+    private final String[] allowedOrigins = {"http://localhost:3000", "http://localhost:5173"};
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
