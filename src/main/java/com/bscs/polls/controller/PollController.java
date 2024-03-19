@@ -1,16 +1,14 @@
 package com.bscs.polls.controller;
 
 import com.bscs.polls.model.Poll;
-import com.bscs.polls.payload.ApiResponse;
-import com.bscs.polls.payload.PollRequest;
-import com.bscs.polls.payload.PollResponse;
-import com.bscs.polls.payload.VoteRequest;
+import com.bscs.polls.payload.*;
 import com.bscs.polls.repository.PollRepository;
 import com.bscs.polls.repository.UserRepository;
 import com.bscs.polls.repository.VoteRepository;
 import com.bscs.polls.security.CurrentUser;
 import com.bscs.polls.security.UserPrincipal;
 import com.bscs.polls.service.PollService;
+import com.bscs.polls.util.AppConstants;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +33,13 @@ public class PollController {
     @Autowired
     private PollService pollService;
 
+    @GetMapping
+    public PagedResponse<PollResponse> getPolls(@CurrentUser UserPrincipal currentUser,
+                                                @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+                                                @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+        return pollService.getAllPolls(currentUser, page, size);
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createPoll(@Valid @RequestBody PollRequest pollRequest) {
@@ -46,6 +51,12 @@ public class PollController {
 
         return ResponseEntity.created(location)
                 .body(new ApiResponse(true, "Poll Created Successfully"));
+    }
+
+    @GetMapping("/{pollId}")
+    public PollResponse getPollById(@CurrentUser UserPrincipal currentUser,
+                                    @PathVariable Long pollId) {
+        return pollService.getPollById(pollId, currentUser);
     }
 
     @PostMapping("/{pollId}/votes")
